@@ -16,6 +16,7 @@ export declare const DataSheetGrid: <T extends unknown>(props: DataSheetGridProp
     ref?: import("react").ForwardedRef<DataSheetGridRefBase> | undefined;
 }) => JSX.Element;
 export { textColumn, createTextColumn } from './columns/textColumn';
+export { koreanTextColumn, createKoreanTextColumn } from './columns/koreanTextColumn';
 export { checkboxColumn } from './columns/checkboxColumn';
 export { floatColumn } from './columns/floatColumn';
 export { intColumn } from './columns/intColumn';

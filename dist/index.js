@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderContextMenuItem = exports.createContextMenuComponent = exports.createAddRowsComponent = exports.keyColumn = exports.isoDateColumn = exports.dateColumn = exports.percentColumn = exports.intColumn = exports.floatColumn = exports.checkboxColumn = exports.createTextColumn = exports.textColumn = exports.DataSheetGrid = exports.DynamicDataSheetGrid = void 0;
+exports.renderContextMenuItem = exports.createContextMenuComponent = exports.createAddRowsComponent = exports.keyColumn = exports.isoDateColumn = exports.dateColumn = exports.percentColumn = exports.intColumn = exports.floatColumn = exports.checkboxColumn = exports.createKoreanTextColumn = exports.koreanTextColumn = exports.createTextColumn = exports.textColumn = exports.DataSheetGrid = exports.DynamicDataSheetGrid = void 0;
 const DataSheetGrid_1 = require("./components/DataSheetGrid");
 const StaticDataSheetGrid_1 = require("./components/StaticDataSheetGrid");
 exports.DynamicDataSheetGrid = DataSheetGrid_1.DataSheetGrid;
@@ -8,6 +8,9 @@ exports.DataSheetGrid = StaticDataSheetGrid_1.StaticDataSheetGrid;
 var textColumn_1 = require("./columns/textColumn");
 Object.defineProperty(exports, "textColumn", { enumerable: true, get: function () { return textColumn_1.textColumn; } });
 Object.defineProperty(exports, "createTextColumn", { enumerable: true, get: function () { return textColumn_1.createTextColumn; } });
+var koreanTextColumn_1 = require("./columns/koreanTextColumn");
+Object.defineProperty(exports, "koreanTextColumn", { enumerable: true, get: function () { return koreanTextColumn_1.koreanTextColumn; } });
+Object.defineProperty(exports, "createKoreanTextColumn", { enumerable: true, get: function () { return koreanTextColumn_1.createKoreanTextColumn; } });
 var checkboxColumn_1 = require("./columns/checkboxColumn");
 Object.defineProperty(exports, "checkboxColumn", { enumerable: true, get: function () { return checkboxColumn_1.checkboxColumn; } });
 var floatColumn_1 = require("./columns/floatColumn");
