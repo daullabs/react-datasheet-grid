@@ -26,6 +26,7 @@ export type DataSheetGridRef = DataSheetGridRefBase
 export const DynamicDataSheetGrid = DataSheetGridBase
 export const DataSheetGrid = StaticDataSheetGridBase
 export { textColumn, createTextColumn } from './columns/textColumn'
+export { koreanTextColumn, createKoreanTextColumn } from './columns/koreanTextColumn'
 export { checkboxColumn } from './columns/checkboxColumn'
 export { floatColumn } from './columns/floatColumn'
 export { intColumn } from './columns/intColumn'
