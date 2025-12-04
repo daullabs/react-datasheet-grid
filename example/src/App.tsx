@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
   checkboxColumn,
   Column,
+  createKoreanTextColumn,
   DataSheetGrid,
   keyColumn,
-  textColumn,
+  textColumn
 } from '../../src'
 import '../../src/style.css'
 
@@ -31,7 +32,20 @@ function App() {
       title: 'First name',
     },
     {
-      ...keyColumn<Row, 'lastName'>('lastName', textColumn),
+      ...keyColumn<Row, 'lastName'>('lastName', createKoreanTextColumn({
+        // formatInputOnFocus: (value) => {
+        //   console.log('formatInputOnFocus', value)
+        //   return String(value ?? '')
+        // },
+        formatBlurredInput: (value) => {
+          console.log('formatBlurredInput', value)
+          return String(value ?? '')
+        },
+        parseUserInput: (value) => {
+          console.log('parseUserInput', value)
+          return String(value ?? '')
+        },
+      })),
       title: 'Last name',
       grow: 2,
     },
