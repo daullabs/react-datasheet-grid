@@ -1,12 +1,13 @@
 import React, { ReactNode, RefObject } from 'react';
 import { Cell, Column, ContextMenuItem, DataSheetGridProps, Selection } from '../types';
-export declare const Grid: <T extends unknown>({ data, columns, outerRef, innerRef, columnWidths, hasStickyRightColumn, displayHeight, headerRowHeight, rowHeight, rowKey, fullWidth, selection, activeCell, rowClassName, cellClassName, children, editing, getContextMenuItems, setRowData, deleteRows, duplicateRows, insertRowAfter, stopEditing, onScroll, }: {
+export declare const Grid: <T extends unknown>({ data, columns, outerRef, innerRef, columnWidths, hasStickyRightColumn, hasStickyLeftColumn, displayHeight, headerRowHeight, rowHeight, rowKey, fullWidth, selection, activeCell, rowClassName, cellClassName, children, editing, getContextMenuItems, setRowData, deleteRows, duplicateRows, insertRowAfter, stopEditing, onScroll, }: {
     data: T[];
     columns: Column<T, any, any>[];
     outerRef: RefObject<HTMLDivElement>;
     innerRef: RefObject<HTMLDivElement>;
     columnWidths?: number[] | undefined;
     hasStickyRightColumn: boolean;
+    hasStickyLeftColumn?: boolean | undefined;
     displayHeight: number;
     headerRowHeight: number;
     rowHeight: (index: number) => {

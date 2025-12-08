@@ -28,11 +28,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Grid = void 0;
 const react_virtual_1 = require("@tanstack/react-virtual");
-const react_1 = __importStar(require("react"));
 const classnames_1 = __importDefault(require("classnames"));
-const Cell_1 = require("./Cell");
+const react_1 = __importStar(require("react"));
 const useMemoizedIndexCallback_1 = require("../hooks/useMemoizedIndexCallback");
-const Grid = ({ data, columns, outerRef, innerRef, columnWidths, hasStickyRightColumn, displayHeight, headerRowHeight, rowHeight, rowKey, fullWidth, selection, activeCell, rowClassName, cellClassName, children, editing, getContextMenuItems, setRowData, deleteRows, duplicateRows, insertRowAfter, stopEditing, onScroll, }) => {
+const Cell_1 = require("./Cell");
+const Grid = ({ data, columns, outerRef, innerRef, columnWidths, hasStickyRightColumn, hasStickyLeftColumn, displayHeight, headerRowHeight, rowHeight, rowKey, fullWidth, selection, activeCell, rowClassName, cellClassName, children, editing, getContextMenuItems, setRowData, deleteRows, duplicateRows, insertRowAfter, stopEditing, onScroll, }) => {
     var _a, _b, _c, _d;
     const rowVirtualizer = (0, react_virtual_1.useVirtualizer)({
         count: data.length,
@@ -70,6 +70,11 @@ const Grid = ({ data, columns, outerRef, innerRef, columnWidths, hasStickyRightC
             if (result[0] !== 0) {
                 result.unshift(0);
             }
+            if (hasStickyLeftColumn &&
+                result[0] !== 1 &&
+                !result.includes(1)) {
+                result.splice(1, 0, 1);
+            }
             if (hasStickyRightColumn &&
                 result[result.length - 1] !== columns.length - 1) {
                 result.push(columns.length - 1);
@@ -96,7 +101,7 @@ const Grid = ({ data, columns, outerRef, innerRef, columnWidths, hasStickyRightC
             headerRowHeight > 0 && (react_1.default.createElement("div", { className: (0, classnames_1.default)('dsg-row', 'dsg-row-header'), style: {
                     width: fullWidth ? '100%' : colVirtualizer.getTotalSize(),
                     height: headerRowHeight,
-                } }, colVirtualizer.getVirtualItems().map((col) => (react_1.default.createElement(Cell_1.Cell, { key: col.key, gutter: col.index === 0, stickyRight: hasStickyRightColumn && col.index === columns.length - 1, width: col.size, left: col.start, className: (0, classnames_1.default)('dsg-cell-header', selectionColMin !== undefined &&
+                } }, colVirtualizer.getVirtualItems().map((col) => (react_1.default.createElement(Cell_1.Cell, { key: col.key, gutter: col.index === 0, stickyRight: hasStickyRightColumn && col.index === columns.length - 1, stickyLeft: hasStickyLeftColumn && col.index === 1, width: col.size, left: col.start, gutterWidth: columnWidths === null || columnWidths === void 0 ? void 0 : columnWidths[0], className: (0, classnames_1.default)('dsg-cell-header', selectionColMin !== undefined &&
                     selectionColMax !== undefined &&
                     selectionColMin <= col.index - 1 &&
                     selectionColMax >= col.index - 1 &&
@@ -126,7 +131,7 @@ const Grid = ({ data, columns, outerRef, innerRef, columnWidths, hasStickyRightC
                             }));
                     const cellIsActive = (activeCell === null || activeCell === void 0 ? void 0 : activeCell.row) === row.index &&
                         activeCell.col === col.index - 1;
-                    return (react_1.default.createElement(Cell_1.Cell, { key: col.key, gutter: col.index === 0, stickyRight: hasStickyRightColumn && col.index === columns.length - 1, active: col.index === 0 && rowActive, disabled: cellDisabled, className: (0, classnames_1.default)(typeof colCellClassName === 'function'
+                    return (react_1.default.createElement(Cell_1.Cell, { key: col.key, gutter: col.index === 0, stickyRight: hasStickyRightColumn && col.index === columns.length - 1, stickyLeft: hasStickyLeftColumn && col.index === 1, active: col.index === 0 && rowActive, disabled: cellDisabled, className: (0, classnames_1.default)(typeof colCellClassName === 'function'
                             ? colCellClassName({
                                 rowData: data[row.index],
                                 rowIndex: row.index,
@@ -138,7 +143,7 @@ const Grid = ({ data, columns, outerRef, innerRef, columnWidths, hasStickyRightC
                                 rowIndex: row.index,
                                 columnId: columns[col.index].id,
                             })
-                            : cellClassName), width: col.size, left: col.start },
+                            : cellClassName), width: col.size, left: col.start, gutterWidth: columnWidths === null || columnWidths === void 0 ? void 0 : columnWidths[0] },
                         react_1.default.createElement(Component, { rowData: data[row.index], getContextMenuItems: getContextMenuItems, disabled: cellDisabled, active: cellIsActive, columnIndex: col.index - 1, rowIndex: row.index, focus: cellIsActive && editing, deleteRow: deleteGivenRow(row.index), duplicateRow: duplicateGivenRow(row.index), stopEditing: stopEditing, insertRowBelow: insertAfterGivenRow(row.index), setRowData: setGivenRowData(row.index), columnData: columns[col.index].columnData })));
                 })));
             }),

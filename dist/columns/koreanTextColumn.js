@@ -30,7 +30,7 @@ exports.createKoreanTextColumn = exports.koreanTextColumn = void 0;
 const classnames_1 = __importDefault(require("classnames"));
 const react_1 = __importStar(require("react"));
 const useFirstRender_1 = require("../hooks/useFirstRender");
-const KoreanTextComponent = react_1.default.memo(({ active, focus, rowData, setRowData, columnData: { placeholder, alignRight, formatInputOnFocus, formatBlurredInput, parseUserInput, continuousUpdates, }, }) => {
+const KoreanTextComponent = react_1.default.memo(({ active, focus, rowData, setRowData, columnData: { placeholder, alignRight, disabled, formatInputOnFocus, formatBlurredInput, parseUserInput, continuousUpdates, }, }) => {
     const ref = (0, react_1.useRef)(null);
     const firstRender = (0, useFirstRender_1.useFirstRender)();
     // We create refs for async access so we don't have to add it to the useEffect dependencies
@@ -82,6 +82,9 @@ const KoreanTextComponent = react_1.default.memo(({ active, focus, rowData, setR
         // When the cell is active but not in focus mode, still focus the input for immediate typing
         else if (active) {
             if (ref.current) {
+                // clear selection
+                ref.current.selectionStart = 0;
+                ref.current.selectionEnd = 0;
                 // Format the input value
                 ref.current.value = asyncRef.current.formatBlurredInput(asyncRef.current.rowData);
                 // Use setTimeout to ensure focus happens after DataSheetGrid's mouse event handling
@@ -115,12 +118,9 @@ const KoreanTextComponent = react_1.default.memo(({ active, focus, rowData, setR
             ref.current.value = asyncRef.current.formatBlurredInput(rowData);
         }
     }, [focus, rowData]);
-    (0, react_1.useEffect)(() => {
-        console.log({ active, focus });
-    }, [active, focus]);
     return (react_1.default.createElement("input", { 
         // We use an uncontrolled component for better performance
-        defaultValue: formatBlurredInput(rowData), className: (0, classnames_1.default)('dsg-input', alignRight && 'dsg-input-align-right'), placeholder: active ? placeholder : undefined, 
+        defaultValue: formatBlurredInput(rowData), className: (0, classnames_1.default)('dsg-input', alignRight && 'dsg-input-align-right'), placeholder: active ? placeholder : undefined, disabled: disabled, 
         // Important to prevent any undesired "tabbing"
         tabIndex: -1, ref: ref, 
         // Make sure that while the cell is not active, the user cannot interact with the input
@@ -136,7 +136,7 @@ const KoreanTextComponent = react_1.default.memo(({ active, focus, rowData, setR
             if (continuousUpdates) {
                 setRowData(parseUserInput(e.target.value));
             }
-        }, onMouseDown: (e) => {
+        }, onMouseDown: () => {
             // When clicking on the input, ensure it gets focus immediately
             // This helps when the cell becomes active via mouse click
             if (active && ref.current) {
@@ -156,17 +156,19 @@ const KoreanTextComponent = react_1.default.memo(({ active, focus, rowData, setR
 });
 KoreanTextComponent.displayName = 'KoreanTextComponent';
 exports.koreanTextColumn = createKoreanTextColumn();
-function createKoreanTextColumn({ placeholder, alignRight = false, continuousUpdates = true, deletedValue = null, parseUserInput = (value) => (value.trim() || null), formatBlurredInput = (value) => String(value !== null && value !== void 0 ? value : ''), formatInputOnFocus = (value) => String(value !== null && value !== void 0 ? value : ''), formatForCopy = (value) => String(value !== null && value !== void 0 ? value : ''), parsePastedValue = (value) => (value.replace(/[\n\r]+/g, ' ').trim() || null), } = {}) {
+function createKoreanTextColumn({ placeholder, alignRight = false, disabled = false, continuousUpdates = true, deletedValue = null, parseUserInput = (value) => (value.trim() || null), formatBlurredInput = (value) => String(value !== null && value !== void 0 ? value : ''), formatInputOnFocus = (value) => String(value !== null && value !== void 0 ? value : ''), formatForCopy = (value) => String(value !== null && value !== void 0 ? value : ''), parsePastedValue = (value) => (value.replace(/[\n\r]+/g, ' ').trim() || null), } = {}) {
     return {
         component: KoreanTextComponent,
         columnData: {
             placeholder,
             alignRight,
+            disabled,
             continuousUpdates,
             formatInputOnFocus,
             formatBlurredInput,
             parseUserInput,
         },
+        disabled: disabled,
         deleteValue: () => deletedValue,
         copyValue: ({ rowData }) => formatForCopy(rowData),
         pasteValue: ({ value }) => parsePastedValue(value),
