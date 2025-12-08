@@ -1,3 +1,4 @@
+import deepEqual from 'fast-deep-equal'
 import React, {
   useCallback,
   useEffect,
@@ -6,6 +7,15 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { useResizeDetector } from 'react-resize-detector'
+import { useColumns } from '../hooks/useColumns'
+import { useColumnWidths } from '../hooks/useColumnWidths'
+import { useDebounceState } from '../hooks/useDebounceState'
+import { useDeepEqualState } from '../hooks/useDeepEqualState'
+import { useDocumentEventListener } from '../hooks/useDocumentEventListener'
+import { useEdges } from '../hooks/useEdges'
+import { useGetBoundingClientRect } from '../hooks/useGetBoundingClientRect'
+import { useRowHeights } from '../hooks/useRowHeights'
 import {
   Cell,
   Column,
@@ -15,33 +25,23 @@ import {
   Operation,
   Selection,
 } from '../types'
-import { useColumnWidths } from '../hooks/useColumnWidths'
-import { useResizeDetector } from 'react-resize-detector'
-import { useColumns } from '../hooks/useColumns'
-import { useEdges } from '../hooks/useEdges'
-import { useDeepEqualState } from '../hooks/useDeepEqualState'
-import { useDocumentEventListener } from '../hooks/useDocumentEventListener'
-import { useGetBoundingClientRect } from '../hooks/useGetBoundingClientRect'
-import { AddRows } from './AddRows'
-import { useDebounceState } from '../hooks/useDebounceState'
-import deepEqual from 'fast-deep-equal'
-import { ContextMenu } from './ContextMenu'
 import {
   encodeHtml,
   isPrintableUnicode,
   parseTextHtmlData,
   parseTextPlainData,
 } from '../utils/copyPasting'
+import { getAllTabbableElements } from '../utils/tab'
 import {
   getCell,
   getCellWithId,
   getSelection,
   getSelectionWithId,
 } from '../utils/typeCheck'
-import { getAllTabbableElements } from '../utils/tab'
+import { AddRows } from './AddRows'
+import { ContextMenu } from './ContextMenu'
 import { Grid } from './Grid'
 import { SelectionRect } from './SelectionRect'
-import { useRowHeights } from '../hooks/useRowHeights'
 
 const DEFAULT_DATA: any[] = []
 const DEFAULT_COLUMNS: Column<any, any, any>[] = []
@@ -71,6 +71,7 @@ export const DataSheetGrid = React.memo(
         headerRowHeight = typeof rowHeight === 'number' ? rowHeight : 40,
         gutterColumn,
         stickyRightColumn,
+        stickyLeftColumn,
         rowKey,
         addRowsComponent: AddRowsComponent = AddRows,
         createRow = DEFAULT_CREATE_ROW as () => T,
@@ -95,6 +96,7 @@ export const DataSheetGrid = React.memo(
       const disableContextMenu = disableContextMenuRaw || lockRows
       const columns = useColumns(rawColumns, gutterColumn, stickyRightColumn)
       const hasStickyRightColumn = Boolean(stickyRightColumn)
+      const hasStickyLeftColumn = Boolean(stickyLeftColumn)
       const innerRef = useRef<HTMLDivElement>(null)
       const outerRef = useRef<HTMLDivElement>(null)
       const beforeTabIndexRef = useRef<HTMLDivElement>(null)
@@ -254,6 +256,16 @@ export const DataSheetGrid = React.memo(
               }
 
               if (
+                hasStickyLeftColumn &&
+                event.clientX - outerBoundingClientRect.left >
+                  columnWidths[0] &&
+                event.clientX - outerBoundingClientRect.left <=
+                  columnWidths[0] + columnWidths[1]
+              ) {
+                x = columnRights[0] + 1
+              }
+
+              if (
                 hasStickyRightColumn &&
                 outerBoundingClientRect.right - event.clientX <=
                   columnWidths[columnWidths.length - 1]
@@ -278,6 +290,7 @@ export const DataSheetGrid = React.memo(
           getOuterBoundingClientRect,
           headerRowHeight,
           hasStickyRightColumn,
+          hasStickyLeftColumn,
           getRowIndex,
         ]
       )
@@ -1782,6 +1795,7 @@ export const DataSheetGrid = React.memo(
             outerRef={outerRef}
             columnWidths={columnWidths}
             hasStickyRightColumn={hasStickyRightColumn}
+            hasStickyLeftColumn={hasStickyLeftColumn}
             displayHeight={displayHeight}
             data={data}
             fullWidth={fullWidth}

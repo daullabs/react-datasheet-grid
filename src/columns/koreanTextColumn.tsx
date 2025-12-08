@@ -6,6 +6,7 @@ import { CellComponent, CellProps, Column } from '../types'
 type KoreanTextColumnOptions<T> = {
   placeholder?: string
   alignRight?: boolean
+  disabled?: boolean
   // When true, data is updated as the user types, otherwise it is only updated on blur. Default to true
   continuousUpdates?: boolean
   // Value to use when deleting the cell
@@ -25,6 +26,7 @@ type KoreanTextColumnOptions<T> = {
 type KoreanTextColumnData<T> = {
   placeholder?: string
   alignRight: boolean
+  disabled: boolean
   continuousUpdates: boolean
   parseUserInput: (value: string) => T
   formatBlurredInput: (value: T) => string
@@ -42,6 +44,7 @@ const KoreanTextComponent = React.memo<
     columnData: {
       placeholder,
       alignRight,
+      disabled,
       formatInputOnFocus,
       formatBlurredInput,
       parseUserInput,
@@ -104,6 +107,10 @@ const KoreanTextComponent = React.memo<
       // When the cell is active but not in focus mode, still focus the input for immediate typing
       else if (active) {
         if (ref.current) {
+          // clear selection
+          ref.current.selectionStart = 0
+          ref.current.selectionEnd = 0
+
           // Format the input value
           ref.current.value = asyncRef.current.formatBlurredInput(
             asyncRef.current.rowData
@@ -145,17 +152,13 @@ const KoreanTextComponent = React.memo<
       }
     }, [focus, rowData])
 
-    useEffect(() => {
-      console.log({active, focus})
-
-    }, [active, focus])
-
     return (
       <input
         // We use an uncontrolled component for better performance
         defaultValue={formatBlurredInput(rowData)}
         className={cx('dsg-input', alignRight && 'dsg-input-align-right')}
         placeholder={active ? placeholder : undefined}
+        disabled={disabled}
         // Important to prevent any undesired "tabbing"
         tabIndex={-1}
         ref={ref}
@@ -175,7 +178,7 @@ const KoreanTextComponent = React.memo<
             setRowData(parseUserInput(e.target.value))
           }
         }}
-        onMouseDown={(e) => {
+        onMouseDown={() => {
           // When clicking on the input, ensure it gets focus immediately
           // This helps when the cell becomes active via mouse click
           if (active && ref.current) {
@@ -205,6 +208,7 @@ export const koreanTextColumn = createKoreanTextColumn<string | null>()
 export function createKoreanTextColumn<T = string | null>({
   placeholder,
   alignRight = false,
+  disabled = false,
   continuousUpdates = true,
   deletedValue = null as unknown as T,
   parseUserInput = (value) => (value.trim() || null) as unknown as T,
@@ -219,11 +223,13 @@ export function createKoreanTextColumn<T = string | null>({
     columnData: {
       placeholder,
       alignRight,
+      disabled,
       continuousUpdates,
       formatInputOnFocus,
       formatBlurredInput,
       parseUserInput,
     },
+    disabled: disabled,
     deleteValue: () => deletedValue,
     copyValue: ({ rowData }) => formatForCopy(rowData),
     pasteValue: ({ value }) => parsePastedValue(value),

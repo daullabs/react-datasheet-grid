@@ -81,6 +81,12 @@
   transform: translateY(-100%);
 }
 
+.dsg-cell-sticky-left {
+  position: sticky;
+  z-index: 30;
+  transform: translateY(-100%);
+}
+
 .dsg-cell-disabled {
   background: var(--dsg-cell-disabled-background-color);
 }
@@ -103,6 +109,10 @@
 
 .dsg-cell-header.dsg-cell-sticky-right {
   box-shadow: 0 1px var(--dsg-border-color);
+}
+
+.dsg-cell-header.dsg-cell-sticky-left {
+  box-shadow: 1px 0 var(--dsg-border-color), 0 1px var(--dsg-border-color);
 }
 
 .dsg-cell-gutter {

@@ -1,5 +1,7 @@
 import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual'
+import cx from 'classnames'
 import React, { ReactNode, RefObject, useEffect } from 'react'
+import { useMemoizedIndexCallback } from '../hooks/useMemoizedIndexCallback'
 import {
   Cell,
   Column,
@@ -7,9 +9,7 @@ import {
   DataSheetGridProps,
   Selection,
 } from '../types'
-import cx from 'classnames'
 import { Cell as CellComponent } from './Cell'
-import { useMemoizedIndexCallback } from '../hooks/useMemoizedIndexCallback'
 
 export const Grid = <T extends any>({
   data,
@@ -18,6 +18,7 @@ export const Grid = <T extends any>({
   innerRef,
   columnWidths,
   hasStickyRightColumn,
+  hasStickyLeftColumn,
   displayHeight,
   headerRowHeight,
   rowHeight,
@@ -43,6 +44,7 @@ export const Grid = <T extends any>({
   innerRef: RefObject<HTMLDivElement>
   columnWidths?: number[]
   hasStickyRightColumn: boolean
+  hasStickyLeftColumn?: boolean
   displayHeight: number
   headerRowHeight: number
   rowHeight: (index: number) => { height: number }
@@ -101,6 +103,13 @@ export const Grid = <T extends any>({
         result.unshift(0)
       }
       if (
+        hasStickyLeftColumn &&
+        result[0] !== 1 &&
+        !result.includes(1)
+      ) {
+        result.splice(1, 0, 1)
+      }
+      if (
         hasStickyRightColumn &&
         result[result.length - 1] !== columns.length - 1
       ) {
@@ -153,8 +162,10 @@ export const Grid = <T extends any>({
                 stickyRight={
                   hasStickyRightColumn && col.index === columns.length - 1
                 }
+                stickyLeft={hasStickyLeftColumn && col.index === 1}
                 width={col.size}
                 left={col.start}
+                gutterWidth={columnWidths?.[0]}
                 className={cx(
                   'dsg-cell-header',
                   selectionColMin !== undefined &&
@@ -218,6 +229,7 @@ export const Grid = <T extends any>({
                     stickyRight={
                       hasStickyRightColumn && col.index === columns.length - 1
                     }
+                    stickyLeft={hasStickyLeftColumn && col.index === 1}
                     active={col.index === 0 && rowActive}
                     disabled={cellDisabled}
                     className={cx(
@@ -238,6 +250,7 @@ export const Grid = <T extends any>({
                     )}
                     width={col.size}
                     left={col.start}
+                    gutterWidth={columnWidths?.[0]}
                   >
                     <Component
                       rowData={data[row.index]}
